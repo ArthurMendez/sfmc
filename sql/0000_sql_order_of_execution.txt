@@ -1,0 +1,83 @@
+/**************************************************************************
+* Filename:   0000_sql_order_of_execution.txt
+* Author:     Arthur Mendez
+* Copyright:  (C) 2025 Arthur Mendez III <yo@rthur.dev>
+* Licenses:   Apache v2.0 https://www.apache.org/licenses/LICENSE-2.0.txt
+* Disclaimer: This code is presented "as is" without any guarantees.
+* Details:    The SFMC T-SQL Query Exection Order. This order should be
+              taken into consideration when doing query optimizations,
+              as the default SFMC query exection timer is 30 minutes.
+**************************************************************************/
+
+    ╔════════════════╗    ╔════════════════╗
+    ║                ║    ║  JOIN Table B  ║
+    ║  FROM Table A  ║    ╚════════════════╝
+    ║                ║             |
+    ╚════════════════╝             |
+            |                      |
+            |______________________|
+                      |
+                      V
+    ╔══════════════════════════════════════╗
+    ║                                      ║
+    ║     JOIN ON A.field1 = B.field1      ║
+    ║                                      ║
+    ╚══════════════════════════════════════╝
+                      |
+                      V
+       ╔═══════════════════════════════╗
+       ║       WHERE Expresion(s)      ║
+       ╚═══════════════════════════════╝
+                      |
+                      V
+       ╔═══════════════════════════════╗
+       ║       GROUP BY Field(s)       ║
+       ╚═══════════════════════════════╝
+                      |
+                      V
+         ╔══════════════════════════╗
+         ║    HAVING Expresion(s)   ║
+         ╚══════════════════════════╝
+                      |
+                      V
+            ╔════════════════════╗
+            ║  SELECT Fields(s)  ║
+            ╚════════════════════╝
+                      |
+                      V
+            ╔════════════════════╗
+            ║      DISTINCT      ║
+            ╚════════════════════╝
+                      |
+                      V
+            ╔════════════════════╗
+            ║  ORDER BY field(s) ║
+            ╚════════════════════╝
+                      |
+                      V
+                ╔═══════════╗
+                ║    TOP    ║
+                ╚═══════════╝
+
+
+Optimization Field Notes:
+1) Avoid Sub-SELECTs in the WHERE clause as the Sub-SELECT will be called for
+   every row. Think in terms of millions of rows doing a Sub-SELECT in the WHERE.
+   Replace with a JOIN if possible, which is almost always the case.
+   Ex: WHERE Field NOT IN (Sub-SELECT) - can always be replaced by a LEFT JOIN
+   exclusionary check.
+    
+
+2) Sub-SELECTs are performance safe within a join if written like so:
+     select a.field1, b.field2
+     from [main_table] as a
+     inner join (select distinct field2 from [join_table] where field2 = 7) as b
+       on b.field2 = a.field2
+
+3) Utilize the ON in a JOIN as much as possible without relying on expressions
+   in the WHERE clause. There might be a SARG warning in the query error and
+   warning checks, but this has proven reduced execution time in Marketing Cloud.
+
+4) Date Processing: is expensive, if possible compute this data at the end of 
+   all the expressions. Boolean expressions and bitwise operations should always
+   be performed beforehand. The same applies to JOINs.
