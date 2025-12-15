@@ -1,2 +1,2 @@
 # SFMC Field Notes
-This is a collection of data and automation practices in the Salesforce Marketing Cloud platform, written by Arthur Mendez <yo@rthur.dev>. The reach here is to educate SFMC developers on effiecient methods within the platform, with the hope of improving global SMFC stability. I have worked on a ~100 SFMC accounts and found that these notes here are the most effective at performance and implementation.
+This is a collection of data and automation practices in the Salesforce Marketing Cloud platform, written by Arthur Mendez <yo@rthur.dev>. The goal here is to educate SFMC developers on effiecient methods within the platform, with the hope of improving global SMFC stability.
