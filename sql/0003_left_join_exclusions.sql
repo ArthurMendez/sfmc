@@ -51,7 +51,7 @@ and log_b.emailaddress is null
 select a.subscriberkey, a.emailaddress, a.first_name, a.last_name, a.mobile
 from [senable_audience] as a
 
-/* This will exclude any that are Held or Unsubscribed, while taking in net new */
+/* This will exclude any subscribers that have a status of Held or Unsubscribed, while taking in net new */
 left join [_subscribers] as s
   on s.subscriberkey = a.subscriberkey
   and s.status in ('held', 'unsubscribed')

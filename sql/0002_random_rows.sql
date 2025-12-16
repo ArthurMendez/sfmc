@@ -13,6 +13,7 @@ from [2025_Winter_Raffle_Contest] as a
 order by newid()
 
 
+
 /* AB Testing a 50/50 random split. */
 /* Initially set the Data Extension AB test field to default into something */
 /* similar to: "Control". Then in the query DE action use Update. */
@@ -20,6 +21,7 @@ select top 50 percent a.subscriberkey, a.emailaddress, a.first_name, a.mobile
 , 'Treatment' as ab_segment
 from [sendable_audience] as a
 order by newid()
+
 
 
 /* Quick 10 random query for Query Studio. */
