@@ -1,0 +1,147 @@
+<!--
+/**************************************************************************
+* Filename:   0006_preferences.html
+* Author:     Arthur Mendez
+* Copyright:  (C) 2025 Arthur Mendez III <yo@rthur.dev>
+* Licenses:   Apache v2.0 https://www.apache.org/licenses/LICENSE-2.0.txt
+* Disclaimer: This code is presented "as is" without any guarantees.
+* Details:    A standard email preference center page. Bootstrap
+              is in use for styling and framework, but the takeaway is
+              the AMPScript used in processing the data and request.
+**************************************************************************/
+-->
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Email Preferences</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-sRIl4kxILFvY47J16cr9ZwB07vP4J8+LH7qKQnuqkuIAvNWLzeN8tE5YBujZqJLB" crossorigin="anonymous">
+    <style>
+      body {
+        min-height: 100vh;
+      }
+      h1 {
+        border-bottom: 1px solid var(--bs-body-color);
+        padding-top: 2em;
+        padding-bottom: 0.25em;
+        margin-bottom: 2em;
+      }
+      p {
+        padding-bottom: 0.25em;
+      }
+      button {
+        padding-top: 0.5em;
+        width: 100%;
+      }
+      .footer {
+        margin-top: 10em;
+      }
+      .disclaimer {
+        font-size: 0.7em
+      }
+      .footer-rights {
+        padding-top: 0.5em;
+      }
+    </style>
+  </head>
+  <!--
+    %%[
+      SET @SubscriberKey = RequestParameter("subscriberkey")
+
+      /* These data extension fields needs to be a boolean type - or the below logic in the Javascript will not work. */
+      /* If the record does not exist, no need to worry as the Javascript only checks if the values returned are True. */
+      /* Anything else, even null, would confirm either a new record or an intention false. */
+      SET @newsletter = Lookup("preference center", "prefNewsletter", "SubscriberKey", @SubscriberKey)
+      SET @tips = Lookup("preference center", "prefTips", "SubscriberKey", @SubscriberKey)
+      SET @announcements = Lookup("preference center", "prefAnnouncements", "SubscriberKey", @SubscriberKey)
+      SET @unsubscribe = Lookup("preference center", "prefUnsubscribe", "SubscriberKey", @SubscriberKey)
+
+
+      /* An additional note, that the "preference center" data extension above needs to be used for audience segmentation */
+      /* through T-SQL. Used by either an inner join for inclusionary checks or a left join for exclusionary checks. */
+    ]%%
+  -->
+  <body class="d-flex flex-column vh-100">
+    <div class="container">
+      <div class="row">
+        <div class="offset-1 col-10 offset-md-2 col-md-8">
+          <h1>Brand Name</h1>
+          <h3 class="text-center">Email Preferences</h3>
+          <p class="text-center">Choose How You Want to Hear From Us</p>
+          <div class="d-flex justify-content-center align-items-center">
+          <!-- The action should be your form confirmation page that is another cloud page that processes the data in the form. -->
+            <form action="https://email.yourcompany.com/preferences_confirmationpage" method="POST">
+              <!-- Note that the hidden input field name for subscriberkey should always be ambiguous. In addition the use of ambiguous -->
+              <!-- subscriber keys that are not the actual email addresses. Think something UUID or similar, and non-incremental. -->
+              <input type="hidden" name="subscriber" value="%%=v(@SubscriberKey)=%%">
+              <input type="hidden" name="jobid" value="%%=v(@JobID)=%%">
+              <div class="mb-3 form-check">
+                <input type="checkbox" class="form-check-input campaigns" name="newsletter" id="newsletter" value="true">
+                <label class="form-check-label" for="newsletter">Quarterly Newsletter</label>
+              </div>
+              <div class="mb-3 form-check">
+                <input type="checkbox" class="form-check-input campaigns" name="tips" id="tips" value="true">
+                <label class="form-check-label" for="tips">Weekly Tips</label>
+              </div>
+              <div class="mb-3 form-check">
+                <input type="checkbox" class="form-check-input campaigns" name="announcements" id="announcements" value="true">
+                <label class="form-check-label" for="announcements">Product Announcements</label>
+              </div>
+              <div class="mb-3 form-check">
+                <input type="checkbox" class="form-check-input" name="unsubscribe" id="unsubscribe" value="true">
+                <label class="form-check-label" for="unsubscribe">Unsubscribe From All</label>
+              </div>
+              <button type="submit" class="btn btn-primary">Update</button>
+            </form>
+          </div>
+        </div>
+        <div class="offset-1 col-10 offset-md-2 col-md-8 footer">
+          <p class="disclaimer">We'll update your preferences immediately. You may continue to receive emails until changes are processed. Changes to your preferences may take a few days to take effect. If you have any issues updating your preferences, contact us.</p>
+          <p class="border-top footer-rights">© 2025 Brand Name, Inc. All rights reserved.</p>
+        </div>
+      </div>
+    </div>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js" integrity="sha384-FKyoEForCGlyvwx9Hj09JcYn3nv7wiPVlz7YYwJrWVcXK/BmnVDxM+D2scQbITxI" crossorigin="anonymous"></script>
+    <script>
+      // Predefines AMPScript values that set the javascript. If the AMPScript is not present then default
+      // values are used.
+      const ampNewsletter = "%%=v(@newsletter)==%%";
+      const ampTips = "%%=v(@tips)=%%";
+      const ampAnnouncements = "%%=v(@announcements)=%%";
+      const ampUnsubscribe = "%%=v(@unsubscribe)=%%";
+      
+      // Determine what needs to be checked off based on if Unsubscribe is selected.
+      if(ampUnsubscribe == "true") {
+        document.getElementById('unsubscribe').checked = true;
+        document.getElementById('newsletter').checked = false;
+        document.getElementById('tips').checked = false;
+        document.getElementById('announcements').checked = false;
+      } else {
+        if(ampNewsletter == "true") document.getElementById('newsletter').checked = true;
+        if(ampTips == "true") document.getElementById('tips').checked = true;
+        if(ampAnnouncements == "true") document.getElementById('announcements').checked = true;
+      }
+
+      // Selectors
+      const campaigns = document.querySelectorAll('.campaigns');
+      const unsub = document.getElementById('unsubscribe');
+      
+      // Remove the unsub check since the subscriber wants other marketing communications.
+      campaigns.forEach((checkbox) => {
+        checkbox.addEventListener('change', () => {
+          if(checkbox.checked) unsub.checked = false;        
+        });
+      });
+      
+      // If the subscriber selects unsub, then remove the checks on all the communication options.
+      unsub.addEventListener('change', () => {
+        if(unsub.checked) {
+          campaigns.forEach((checkbox) => {
+            checkbox.checked = false;
+          });
+        }
+      });
+    </script>
+  </body>
+</html>

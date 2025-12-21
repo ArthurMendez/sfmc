@@ -1,0 +1,110 @@
+<!--
+/**************************************************************************
+* Filename:   0006_confirmation.html
+* Author:     Arthur Mendez
+* Copyright:  (C) 2025 Arthur Mendez III <yo@rthur.dev>
+* Licenses:   Apache v2.0 https://www.apache.org/licenses/LICENSE-2.0.txt
+* Disclaimer: This code is presented "as is" without any guarantees.
+* Details:    A confirmation page for an email preference center. Bootstrap
+              is in use for styling and framework, but the takeaway is
+              the AMPScript used in processing the data and request.
+**************************************************************************/
+-->
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Email Preferences Confirmation</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-sRIl4kxILFvY47J16cr9ZwB07vP4J8+LH7qKQnuqkuIAvNWLzeN8tE5YBujZqJLB" crossorigin="anonymous">
+    <style>
+      body {
+        min-height: 100vh;
+      }
+      h1 {
+        border-bottom: 1px solid var(--bs-body-color);
+        padding-top: 2em;
+        padding-bottom: 0.25em;
+        margin-bottom: 2em;
+      }
+      p {
+        padding-bottom: 0.25em;
+      }
+      button {
+        padding-top: 0.5em;
+        width: 100%;
+      }
+      .footer {
+       margin-top: 10em;
+      }
+      .disclaimer {
+        font-size: 0.7em
+      }
+      .footer-rights {
+        padding-top: 0.5em;
+      }
+    </style>
+  </head>
+  <!--%%[
+    SET @SubscriberKey = RequestParameter("subscriber")
+    SET @JobID = RequestParameter("jobid")
+    SET @EmailAddress = Lookup("_Subscribers", "EmailAddress", "SubscriberKey", @SubscriberKey)
+    SET @Status = Lookup("_Subscribers", "status", "SubscriberKey", @SubscriberKey)
+    SET @newsletter = IIF(RequestParameter("newsletter") == "true", true, false) 
+    SET @tips = IIF(RequestParameter("tips") == "true", true, false)
+    SET @announcements = IIF(RequestParameter("announcements") == "true", true, false)
+    SET @unsubscribe = IIF(RequestParameter("unsubscribe") == "true", true, false)
+
+    UpsertData("preference center, 1, "SubscriberKey", @SubscriberKey, "prefNewsletter", @newsletter, "prefTips", @tips, "prefAnnouncements", @announcements, "prefUnsubscribe", @unsubscribe)
+
+    /* This AMPScript invoking API code is so that the unsubscribes are logged for reporting correctly. */
+    IF @unsubscribe == true THEN
+      SET @lue = CreateObject("ExecuteRequest")
+      SetObjectProperty(@lue,"Name","LogUnsubEvent")
+
+      SET @lue_prop = CreateObject("APIProperty")
+      SetObjectProperty(@lue_prop, "Name", "SubscriberKey")
+      SetObjectProperty(@lue_prop, "Value", @SubscriberKey)
+      AddObjectArrayItem(@lue, "Parameters", @lue_prop)
+
+      SET @lue_prop = CreateObject("APIProperty")
+      SetObjectProperty(@lue_prop, "Name", "JobID")
+      SetObjectProperty(@lue_prop, "Value", @JobID)
+      AddObjectArrayItem(@lue, "Parameters", @lue_prop)
+
+      SET @lue_prop = CreateObject("APIProperty")
+      SetObjectProperty(@lue_prop, "Name", "Reason")
+      SetObjectProperty(@lue_prop, "Value", "Unsubscribed from Custom Preference Center")
+      AddObjectArrayItem(@lue, "Parameters", @lue_prop)
+
+      SET @resp = InvokeExecute(@lue, @overallStatus, @requestId)
+
+      SET @Response = Row(@resp, 1)
+      SET @Status = Field(@Response,"StatusMessage")
+      SET @Error = Field(@Response,"ErrorCode")
+    ELSE
+      SET @Subscriber = CreateObject("Subscriber")
+      SetObjectProperty(@Subscriber, "SubscriberKey",@SubscriberKey)
+      SetObjectProperty(@Subscriber, "EmailAddress",@EmailAddress)
+      SetObjectProperty(@Subscriber, "Status", @status)
+      SET @resp = InvokeUpdate(@Subscriber, @createErrDesc, @createErrNo, @createOpts)
+    ENDIF
+    ]%%-->
+  <body>
+    <div class="container">
+      <div class="row">
+        <div class="offset-1 col-10 offset-md-2 col-md-8">
+          <h1>Brand Name</h1>
+          <div class="justify-content-center align-items-center">
+            <h2>Your Email Preferences have been updated.</h2>
+            <p>You may continue to receive emails until changes are processed. Changes to your preferences may take a few days to take effect. If you have any issues updating your preferences, contact us.</p>
+          </div>
+        </div>
+        <div class="offset-1 col-10 offset-md-2 col-md-8 footer">
+          <p class="border-top footer-rights">© 2025 Brand Name, Inc. All rights reserved.</p>
+        </div>
+      </div>
+    </div>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js" integrity="sha384-FKyoEForCGlyvwx9Hj09JcYn3nv7wiPVlz7YYwJrWVcXK/BmnVDxM+D2scQbITxI" crossorigin="anonymous"></script>
+  </body>
+</html>
