@@ -23,14 +23,14 @@ group by j.emailname, j.createddate
 
 
 /* Query only those that were part of an email that was uniquely clicked. Note */
-/* that I will shy away from the _open data view as those have been compromised */
+/* that I will shy away from the _open data view as those have been deprecated */
 /* by ESP security policies protecting users. */
 select j.emailname, count(1) as totals
 from [_sent] as s
 
 inner join [_job] as j
   on j.jobid = s.jobid
-  and j.emailname = "2025 Q3 Quarterly Newsletter" /* If there were 2025 Q1 or 2025 Q2 sends */
+  and j.emailname = "2025 Q3 Quarterly Newsletter"
 
 inner join [_click] as c
   on c.subscriberkey = s.subscriberkey
