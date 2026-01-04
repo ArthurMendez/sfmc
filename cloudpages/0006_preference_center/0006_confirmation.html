@@ -57,7 +57,8 @@
 
     UpsertData("preference center, 1, "SubscriberKey", @SubscriberKey, "prefNewsletter", @newsletter, "prefTips", @tips, "prefAnnouncements", @announcements, "prefUnsubscribe", @unsubscribe)
 
-    /* This AMPScript invoking API code is so that the unsubscribes are logged for reporting correctly. */
+    /* The AMPScript here is to ensure that the unsubscribes are correctly getting logged in the data views
+    /* and the reporting data. */
     IF @unsubscribe == true THEN
       SET @lue = CreateObject("ExecuteRequest")
       SetObjectProperty(@lue,"Name","LogUnsubEvent")

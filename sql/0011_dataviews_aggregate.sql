@@ -1,18 +1,18 @@
 /**************************************************************************
 * Filename:   0011_dataviews_aggregate.sql
 * Author:     Arthur Mendez
-* Copyright:  (C) 2025 Arthur Mendez III <yo@rthur.dev>
+* Copyright:  (C) 2025 Arthur Mendez III <hello@amendez.dev>
 * Licenses:   Apache v2.0 https://www.apache.org/licenses/LICENSE-2.0.txt
 * Disclaimer: This code is presented "as is" without any guarantees.
 * Details:    Data view aggregate functions
               For your data views reference: https://dataviews.io
 **************************************************************************/
 
-/* Here is the intial pitch of creating a send metrics query. Ideally this */
-/* query should work in SFMC, but joining these many data view tables */
-/* results in timing out - regardless of the DV data extension size. */
-/* EventDate and datediff is being left out intentionally in the begining */
-/* for learning purpurposes. */
+/* Here is the intial pitch of creating a send aggregate query. Ideally this */
+/* query should work in SFMC, but by joining several data view tables */
+/* the query becomes susceptible to execution timeouts - regardless of */
+/* the data view size. EventDate and datediff are being left out */
+/*intentionally in the begining SQL for learning purpurposes. */
 select j.emailname, j.jobid
 , count(s.subscriberkey) as sent
 , count(o.subscriberkey) as opens
@@ -142,10 +142,10 @@ inner join [_job] as j
 group by j.emailname, j.jobid
 
 
-
-/* This example of the aggregate data views utilizing datediff will be */
-/* used the most. Ideally you don't want to go to the entire 6 months but rather */
-/* in smaller increments date wise - for instance days or weeks. */
+/* This example of the aggregate data views utilizes datediff which will */
+/* be fequently used in aggregate collection. Ideally you don't want to capture */
+/* the entire 6 months but rather query smaller increments date wise to prevent */
+/* execution timeouts. For breaking up the query in a range of days or weeks. */
 select j.emailname, j.jobid
 , count(1) as clicks
 from [_click] as c

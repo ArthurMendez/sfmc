@@ -1,7 +1,7 @@
 /**************************************************************************
 * Filename:   0008_dataviews_unsub.sql
 * Author:     Arthur Mendez
-* Copyright:  (C) 2025 Arthur Mendez III <yo@rthur.dev>
+* Copyright:  (C) 2025 Arthur Mendez III <hello@amendez.dev>
 * Licenses:   Apache v2.0 https://www.apache.org/licenses/LICENSE-2.0.txt
 * Disclaimer: This code is presented "as is" without any guarantees.
 * Details:    Unsubscribe logging through data views.

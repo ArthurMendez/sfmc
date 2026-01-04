@@ -1,7 +1,7 @@
 /**************************************************************************
 * Filename:   0004_inner_joins.sql
 * Author:     Arthur Mendez
-* Copyright:  (C) 2025 Arthur Mendez III <yo@rthur.dev>
+* Copyright:  (C) 2025 Arthur Mendez III <hello@amendez.dev>
 * Licenses:   Apache v2.0 https://www.apache.org/licenses/LICENSE-2.0.txt
 * Disclaimer: This code is presented "as is" without any guarantees.
 * Details:    Some uses cases for inner joins.
@@ -43,10 +43,10 @@ inner join [member_org] as org
   on org.name = a.org_name
   and org.active = 1 /* T-SQL can take either 1 / 0 or True / False for boolean fields in data extensions. */
 
-/* This can be strict or loose by not including this data view join depending on the requested count accuracy. */
-/* Some individuals like the numbers being reported for QA to be as accurate as possible. Also no need to */
-/* worry if this isn't included and those subscribers make their way to segmentation as nothing will be sent */
-/* without an active or bounced status. */
+/* The target audience can be strict by including the _subscribers data view for count */
+/* accuracy. Some individuals like the numbers being reported for QA / UAT to be as accurate as */
+/* possible. Also no need to worry if this isn't included and those subscribers make their way into the segmentation */
+/* as nothing will be sent out of marketing cloud with an unsubscribed or held status. */
 inner join [_subscribers] as s 
   on s.subscriberkey = a.subscriberkey
   and s.status = 'active'
